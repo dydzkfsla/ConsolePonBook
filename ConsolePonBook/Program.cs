@@ -18,7 +18,7 @@ namespace ConsolePonBook
                 try
                 {
                     choice = int.Parse(Console.ReadLine());
-                }catch(Exception e)
+                }catch(Exception)
                 {
                     Console.WriteLine("입력이 잘못되었습니다.");
                     choice = -1;
