@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
@@ -8,10 +9,12 @@ using System.Threading.Tasks;
 
 namespace ConsolePonBook
 {
-    class PhoneBookManager
+
+    class PhoneBookManager 
     {
         PhoneInfo[] phones = new PhoneInfo[MAX_CNT];
-        int curCnt = 0;
+        HostComparer Com = new HostComparer();
+        int curCnt = 7;
         const int MAX_CNT = 100;
 
         //tring name;            //필수
@@ -20,9 +23,16 @@ namespace ConsolePonBook
 
         public void ShowMenu()
         {
-            Console.WriteLine("----------------------- 주소록 --------------------------");
-            Console.WriteLine("1. 입력  |  2. 목록  | 3. 검색  |   4. 삭제  | 5. 종료 |");
-            Console.WriteLine("---------------------------------------------------------");
+            phones[0] = new PhoneInfo("머하니", "01084851561", "1996");
+            phones[1] = new PhoneInfo("김김김", "01021845561", "1997");
+            phones[2] = new PhoneInfo("받받박", "01015615561");
+            phones[3] = new PhoneUnivInfo("용칼님", "01015615561", "스마트it","1745");
+            phones[4] = new PhoneUnivInfo("용할님", "0101225561","1561","메카트로닉", "1845");
+            phones[5] = new PhoneCompanyInfo("용님", "01045615561", "1161", "(주)하느님");
+            phones[6] = new PhoneCompanyInfo("양님", "01084615561", "(주)부처님");
+            Console.WriteLine("----------------------------------- 주소록 ------------------------------------");
+            Console.WriteLine("1. 입력  |  2. 목록  | 3. 검색 | 4. 정렬  |  5. 삭제  | 6. 종료 |");
+            Console.WriteLine("------------------------------------------------------------------------------");
             Console.Write("선택 : ");
         }
 
@@ -38,11 +48,11 @@ namespace ConsolePonBook
                 Console.Write("선택: ");
                 string cho = CaseInput(temp);
                 if (cho == "-1") continue;
-                switch (int.Parse(cho)) 
+                switch (int.Parse(cho))     //각 타입에 맞게 변환후 입력
                 {
-                    case 1: PhoneInfoData(); break;
-                    case 2: PhoneUnivInfoData(); break;
-                    case 3: PhoneCompanyInfoData(); break;
+                    case 1: PhoneData(ref phones[curCnt++]); break;
+                    case 2: phones[curCnt] = new PhoneCompanyInfo(); PhoneData(ref phones[curCnt++]); break;
+                    case 3: phones[curCnt] = new PhoneUnivInfo(); PhoneData(ref phones[curCnt++]); break;
                     case 4: Console.Clear();return;
                 }
             }
@@ -139,7 +149,32 @@ namespace ConsolePonBook
                 phones[i] = phones[i + 1];          //값을 앞으로 당김 큐
             }
             phones[curCnt--] = null;        //앞으로 당긴후 마지막을 null로 후 에 카운트 -1
+        }
+        public void Compar()
+        {
+            Console.Clear();
+            Regex temp = new Regex(@"[1-6]{1}$");
+            PhoneInfo[] potemp = new PhoneInfo[curCnt];
+            Console.WriteLine("정렬할 기준을 선택하세요");
+            Console.WriteLine("1.이름\t2.폰번호\t3.생일\t4.전공\t5.입학년도\t6.회사");
+            int cho =int.Parse(CaseInput(temp));
+            switch (cho)
+            {
+                case 1: Com = new NameComparer();Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
+                case 2: Com = new PhoneNumberComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
+                case 3: Com = new BirthComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
+                case 4: Com = new MajorComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
+                case 5: Com = new YearComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
+                case 6: Com = new CompanyComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
 
+                default: Console.WriteLine("잘못되었습니다."); return;
+            }
+
+            for (int i = 0; i < curCnt; i++)
+            {
+                Console.WriteLine($"{potemp[i].ToString()}");        //생일의 초기값 = "Not data"
+            }
+            Console.ReadLine();
 
         }
         #endregion
@@ -190,78 +225,78 @@ namespace ConsolePonBook
             }
             Console.ReadLine();
         }
-        private void PhoneInfoData()
+        private void PhoneData(ref PhoneInfo phoneinfo)
         {
             Console.Clear();
-            Regex temp = new Regex(@"^[가-힣]{1,}$");
+            Regex temp = new Regex(@"^[가-힣]{1,}$"); //이름입력 조건은 1개이상 한글
             Console.Write("이름: ");
             string name = CaseInput(temp);
-            if (name == "-1") { ShowErr(); return; }
-            temp = new Regex(@"^01[01678][0-9]{4}[0-9]{4}$");
-            Console.Write("폰번호(- 제외): ");
-            string phoneNumber = CaseInput(temp);        //만약 정규식 사용이 가능하다면
-            if (phoneNumber == "-1") { ShowErr(); return; }
-            temp = new Regex(@"^[\d]{1,}$");
-            Console.Write("생일입력: ");
-            string birth = CaseInput(temp);        //만약 정규식 사용이 가능하다면
-            if (birth == "-1") phones[curCnt++] = new PhoneInfo(name, phoneNumber);
-            else phones[curCnt++] = new PhoneInfo(name, phoneNumber, birth);
-        }
-        private void PhoneUnivInfoData()
-        {
-            Console.Clear();
-            Regex temp = new Regex(@"^[가-힣]{1,}$");
-            Console.Write("이름: ");
-            string name = CaseInput(temp);
-            if (name == "-1") { ShowErr(); return; }
+            if (name == "-1") { ShowErr(); phoneinfo = null; return; }
 
-            temp = new Regex(@"^01[01678][0-9]{4}[0-9]{4}$");
+            temp = new Regex(@"^01[01678][0-9]{4}[0-9]{4}$");   //폰입력조건
             Console.Write("폰번호(- 제외): ");
             string phoneNumber = CaseInput(temp);       
-            if (phoneNumber == "-1") { ShowErr(); return; }
+            if (phoneNumber == "-1") { ShowErr(); phoneinfo = null; return; }
 
             temp = new Regex(@"^[\d]{1,}$");
             Console.Write("생일입력: ");
             string birth = CaseInput(temp);
 
-            temp = new Regex(@"^[\D]{1,}$");
-            Console.Write("전공입력: ");
-            string major = CaseInput(temp);
-            if(major == "-1") { ShowErr(); ; return; }
+            if (phoneinfo is PhoneUnivInfo)  //회사 형태의 Phoneinof면
+            {
+                temp = new Regex(@"^[\D]{1,}$");
+                Console.Write("전공입력: ");
+                string major = CaseInput(temp);
+                if (major == "-1") { ShowErr(); phoneinfo = null; return; }
 
-            temp = new Regex(@"^[\d]{4}$");
-            Console.Write("년도입력: ");
-            string year = CaseInput(temp);
-            if(year == "-1") { ShowErr(); return; }
+                temp = new Regex(@"^[\d]{4}$");
+                Console.Write("년도입력: ");
+                string year = CaseInput(temp);
+                if (year == "-1") { ShowErr(); phoneinfo = null; return; }
 
-            if (birth == "-1") phones[curCnt++] = new PhoneUnivInfo(name, phoneNumber, major, year);
-            else phones[curCnt++] = new PhoneUnivInfo(name, phoneNumber, birth, major, year);
-        }
-        private void PhoneCompanyInfoData()
-        {
-            Console.Clear();
-            Regex temp = new Regex(@"^[가-힣]{1,}$");
-            Console.Write("이름: ");
-            string name = CaseInput(temp);
-            if (name == "-1"){ ShowErr(); return; }
+                if (birth == "-1")
+                {
+                    phoneinfo = new PhoneUnivInfo(name, phoneNumber, major, year);
+                    return;         //값이 할당 됬으므로
+                }
+                else
+                {
+                    phoneinfo = new PhoneUnivInfo(name, phoneNumber, birth, major, year);
+                    return;
+                }
+            }
+            else if(phoneinfo is PhoneCompanyInfo)
+            {
+                temp = new Regex(@"^[\D]{1,}$");
+                Console.Write("회사입력: ");
+                string company = CaseInput(temp);
+                if (company == "-1") { ShowErr(); return; }
 
-            temp = new Regex(@"^01[01678][0-9]{4}[0-9]{4}$");
-            Console.Write("폰번호(- 제외): ");
-            string phoneNumber = CaseInput(temp);
-            if (phoneNumber == "-1") { ShowErr(); return; }
-
-            temp = new Regex(@"^[\d]{1,}$");
-            Console.Write("생일입력: ");
-            string birth = CaseInput(temp);
-
-            temp = new Regex(@"^[\D]{1,}$");
-            Console.Write("회사입력: ");
-            string company = CaseInput(temp);
-            if(company == "-1"){ ShowErr(); return; }
-
-            if (birth == "-1") phones[curCnt++] = new PhoneCompanyInfo(name, phoneNumber, company);
-            else phones[curCnt++] = new PhoneCompanyInfo(name, phoneNumber, birth, company);
-        }
+                if (birth == "-1")
+                {
+                    phoneinfo = new PhoneCompanyInfo(name, phoneNumber, company);
+                    return;
+                }
+                else 
+                { 
+                    phoneinfo = new PhoneCompanyInfo(name, phoneNumber, birth, company);
+                    return;
+                }
+            }
+            else
+            {
+                if (birth == "-1")
+                {
+                    phoneinfo = new PhoneInfo(name, phoneNumber);
+                    return;
+                }
+                else
+                {
+                    phoneinfo = new PhoneInfo(name, phoneNumber, birth);
+                    return;
+                }
+            }
+        }  
         private string CaseInput(Regex temp)
         {
             try
@@ -282,6 +317,7 @@ namespace ConsolePonBook
         }
         private void ShowErr()
         {
+            curCnt--;
             Console.WriteLine("입력이 잘못되었습니다.");
             Console.ReadLine();
         }

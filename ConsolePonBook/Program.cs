@@ -29,8 +29,9 @@ namespace ConsolePonBook
                     case 1: manager.InputData(); break;
                     case 2: manager.ListData(); break;
                     case 3: manager.SearchData(); break;
-                    case 4: manager.DeleteData(); break;
-                    case 5: Console.Clear();return;
+                    case 4: manager.Compar(); break;
+                    case 5: manager.DeleteData(); break;
+                    case 6: Console.Clear();return;
                 }
 
                 Console.Clear();
