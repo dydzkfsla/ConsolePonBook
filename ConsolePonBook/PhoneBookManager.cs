@@ -9,13 +9,36 @@ using System.Threading.Tasks;
 
 namespace ConsolePonBook
 {
+    class InputException : System.Exception
+    {
+        public InputException() : base() { }
+        public InputException(string message) : base(message) { }
+        public InputException(string message, System.Exception inner) : base(message, inner) { }
+
+        protected InputException(System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 
     class PhoneBookManager 
     {
+        static PhoneBookManager bookManager;
         PhoneInfo[] phones = new PhoneInfo[MAX_CNT];
         HostComparer Com = new HostComparer();
         int curCnt = 7;
         const int MAX_CNT = 100;
+
+        private PhoneBookManager()
+        {
+
+        }
+
+        public static PhoneBookManager Create()
+        {
+            if (bookManager == null)
+                bookManager = new PhoneBookManager();
+
+            return bookManager;
+        }
 
         //tring name;            //필수
         //string phoneNumber;     //필수
@@ -160,7 +183,7 @@ namespace ConsolePonBook
             int cho =int.Parse(CaseInput(temp));
             switch (cho)
             {
-                case 1: Com = new NameComparer();Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
+                case 1: Com = new NameComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(phones, Com); break;
                 case 2: Com = new PhoneNumberComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
                 case 3: Com = new BirthComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
                 case 4: Com = new MajorComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
@@ -296,7 +319,7 @@ namespace ConsolePonBook
                     return;
                 }
             }
-        }  
+        }
         private string CaseInput(Regex temp)
         {
             try
@@ -307,11 +330,12 @@ namespace ConsolePonBook
                     return cho;
                 }
                 else
-                    throw new Exception();
+                    throw new InputException("입력 오류입니다.");
             }
-            catch (Exception)
+            catch (InputException err)
             {
-                Console.Clear();
+                Console.WriteLine(err.Message);
+                Console.ReadLine();
                 return "-1";
             }
         }

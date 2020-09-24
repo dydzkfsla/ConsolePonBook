@@ -10,7 +10,8 @@ namespace ConsolePonBook
     {
         static void Main(string[] args)
         {
-            PhoneBookManager manager = new PhoneBookManager();
+            PhoneBookManager manager;
+            manager = PhoneBookManager.Create();
             while (true)
             {
                 int choice = -1;
