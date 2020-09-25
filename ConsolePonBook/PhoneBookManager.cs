@@ -183,7 +183,7 @@ namespace ConsolePonBook
             int cho =int.Parse(CaseInput(temp));
             switch (cho)
             {
-                case 1: Com = new NameComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(phones, Com); break;
+                case 1: Com = new NameComparer(); /*Array.Copy(phones, potemp, curCnt);*/ Array.Sort(phones, Com); break;
                 case 2: Com = new PhoneNumberComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
                 case 3: Com = new BirthComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
                 case 4: Com = new MajorComparer(); Array.Copy(phones, potemp, curCnt); Array.Sort(potemp, Com); break;
