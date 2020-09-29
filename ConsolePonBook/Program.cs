@@ -32,7 +32,7 @@ namespace ConsolePonBook
                     case 3: manager.SearchData(); break;
                     case 4: manager.Compar(); break;
                     case 5: manager.DeleteData(); break;
-                    case 6: Console.Clear();return;
+                    case 6: Console.Clear(); manager.END(); return;
                 }
 
                 Console.Clear();

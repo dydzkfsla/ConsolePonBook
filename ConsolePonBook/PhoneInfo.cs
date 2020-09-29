@@ -16,6 +16,7 @@ namespace ConsolePonBook
     interface Imajor { string Major { get; set; } }
     interface Iyear { string Year { get; set; } }
 
+    [Serializable]
     class PhoneInfo : IName, IPhoenNumber, Ibirth
     {
         #region 내부 사용 맴버
@@ -64,6 +65,7 @@ namespace ConsolePonBook
 
     }
 
+    [Serializable]
     class PhoneUnivInfo : PhoneInfo , IUniv, Imajor, Iyear
     {
         #region 내부 맴버
@@ -108,6 +110,7 @@ namespace ConsolePonBook
         #endregion
     }
 
+    [Serializable]
     class PhoneCompanyInfo : PhoneInfo , ICom, Icompany
     {
         #region 내부맴버

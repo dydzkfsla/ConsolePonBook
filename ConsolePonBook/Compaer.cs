@@ -55,7 +55,7 @@ namespace ConsolePonBook
             if (!(x is PhoneUnivInfo) && !(y is PhoneUnivInfo)) return 0; //둘다 PhoneUnivInfo 가 아니면
             else if ((x is PhoneUnivInfo) && !(y is PhoneUnivInfo)) return -1; // 첫번째만 PhoneUnivInfo 이면
             else if (!(x is PhoneUnivInfo) && (y is PhoneUnivInfo)) return 1; // 두번째만 PhoneUnivInfo 이면
-            
+
             PhoneUnivInfo first = x as PhoneUnivInfo;
             PhoneUnivInfo secend = y as PhoneUnivInfo;
 
