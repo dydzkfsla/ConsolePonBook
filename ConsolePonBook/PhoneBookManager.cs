@@ -25,7 +25,9 @@ namespace ConsolePonBook
     class PhoneBookManager
     {
         static PhoneBookManager bookManager;
-        List<PhoneInfo> phones = new List<PhoneInfo>();
+
+        HashSet<PhoneInfo> phones = new HashSet<PhoneInfo>();
+        
         HostComparer Com = new HostComparer();
 
         enum PhonesChoose { phoneInfo = 1, phoneUnivInfo = 2 , phoneCompanyInfo = 3 }
@@ -35,8 +37,11 @@ namespace ConsolePonBook
             BinaryFormatter binary = new BinaryFormatter();
             using (FileStream file = new FileStream("PhooneBookManager.dat", FileMode.OpenOrCreate, FileAccess.Read))
             {
-                phones = (List<PhoneInfo>)binary.Deserialize(file);
-                file.Flush();
+                if (!(file.Length == 0))
+                {
+                    phones = (HashSet<PhoneInfo>)binary.Deserialize(file);
+                    file.Flush();
+                }
             }
         }
 
@@ -67,7 +72,7 @@ namespace ConsolePonBook
             {
                 Regex temp = new Regex(@"[1-4]{1}$");
                 Console.Clear();
-                Console.WriteLine($"{phones.Count}번째 사용자의 정보를 입력해야 합니다.");
+                Console.WriteLine($"{phones.Count+1}번째 사용자의 정보를 입력해야 합니다.");
                 Console.WriteLine("1.일반 지인 입력    2.회사 지인 입력   3.학교 지인 입력 4.나가기");
                 Console.Write("선택: ");
                 string cho = CaseInput(temp);
@@ -167,7 +172,7 @@ namespace ConsolePonBook
 
             if (temp == 2) return;
 
-            phones.RemoveAt(cho);
+            phones.Remove(phones.ElementAt(cho));
         }
         public void Compar()
         {
@@ -267,7 +272,9 @@ namespace ConsolePonBook
 
             temp = new Regex(@"^[\d]{1,}$");
             Console.Write("생일입력: ");
-            string birth = CaseInput(temp);
+            string birth = Console.ReadLine().Trim();
+            if (!temp.IsMatch(birth))
+                birth = "-1";
 
             if (choose == PhonesChoose.phoneUnivInfo)  //회사 형태의 Phoneinof면
             {
@@ -350,14 +357,5 @@ namespace ConsolePonBook
         }
         #endregion
 
-        ~PhoneBookManager()
-        {
-            BinaryFormatter binary = new BinaryFormatter();
-            using (FileStream file = new FileStream("PhooneBookManager.dat", FileMode.OpenOrCreate, FileAccess.Write))
-            {
-                binary.Serialize(file, phones);
-                file.Flush();
-            }
-        }
     }
 }

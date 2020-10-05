@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsolePonBook
+namespace ConsolePonBook 
 {
     class HostComparer : IComparer { public int Compare(object x, object y) { throw new NotImplementedException(); } };
 

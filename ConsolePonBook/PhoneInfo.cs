@@ -59,8 +59,14 @@ namespace ConsolePonBook
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            return obj is PhoneInfo info && PhoneNumber == info.PhoneNumber;
         }
+
+        public override int GetHashCode()
+        {
+            return 1603624094 + EqualityComparer<string>.Default.GetHashCode(PhoneNumber);
+        }
+
         #endregion
 
     }
@@ -71,6 +77,11 @@ namespace ConsolePonBook
         #region 내부 맴버
         string major;
         string year;
+        #endregion
+
+        #region I프로퍼티
+        public string Major { get => major; set => major = value; }
+        public string Year { get => year; set => year = value; }
         #endregion
 
         #region 생성자
@@ -92,11 +103,6 @@ namespace ConsolePonBook
         }
         #endregion
 
-        #region I프로퍼티
-        public string Major { get => major; set => major = value; }
-        public string Year { get => year; set => year = value; }
-        #endregion
-
         #region 오버라이드 메서드
         public override string ToString()
         {
@@ -105,7 +111,7 @@ namespace ConsolePonBook
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            return obj is PhoneInfo info && base.PhoneNumber == info.PhoneNumber;
         }
         #endregion
     }
@@ -115,6 +121,10 @@ namespace ConsolePonBook
     {
         #region 내부맴버
         string company;
+        #endregion
+
+        #region I프로퍼티 
+        public string Company { get => company; set => company = value; }
         #endregion
 
         #region 생성자
@@ -134,10 +144,6 @@ namespace ConsolePonBook
         }
         #endregion
 
-        #region I프로퍼티 
-        public string Company { get => company; set => company = value; }
-        #endregion
-
         #region 오버라이드 메서드
         public override string ToString()
         {
@@ -146,7 +152,7 @@ namespace ConsolePonBook
 
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            return obj is PhoneInfo info && PhoneNumber == info.PhoneNumber;
         }
         #endregion
     }
