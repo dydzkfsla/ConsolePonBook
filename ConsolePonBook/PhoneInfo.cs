@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace ConsolePonBook
 {
+    /// <summary>
+    /// 해당 class가 무엇인가를 알려줄 인터페이스
+    /// </summary>
     interface IUniv { };
     interface ICom { };
 
+    /// <summary>
+    /// 각 데이터가 가져야할 프로퍼티 및 데이터들
+    /// </summary>
     interface IName { string Name { get; set; } }
     interface IPhoenNumber { string PhoneNumber { get; set; } }
     interface Ibirth { string Birth { get; set; } }
@@ -16,6 +22,9 @@ namespace ConsolePonBook
     interface Imajor { string Major { get; set; } }
     interface Iyear { string Year { get; set; } }
 
+    /// <summary>
+    /// 실제 들어가 데이터의 class 
+    /// </summary>
     [Serializable]
     class PhoneInfo : IName, IPhoenNumber, Ibirth
     {
@@ -50,6 +59,7 @@ namespace ConsolePonBook
             this.birth = birth;
         }
         #endregion
+
 
         #region 오버라이드 메서드
         public override string ToString()

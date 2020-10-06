@@ -7,50 +7,45 @@ using System.Threading.Tasks;
 
 namespace ConsolePonBook 
 {
-    class HostComparer : IComparer { public int Compare(object x, object y) { throw new NotImplementedException(); } };
+    /// <summary>
+    /// 검색 조건 들
+    /// </summary>
 
-    class NameComparer : HostComparer, IComparer
+    class HostComparer : IComparer<PhoneInfo> { public int Compare(PhoneInfo x, PhoneInfo y) { return 0; } };
+
+    class NameComparer : HostComparer, IComparer<PhoneInfo>
     {
-        public int Compare(object x, object y)
+        public int Compare(PhoneInfo first, PhoneInfo secend)
         {
-            PhoneInfo first = x as PhoneInfo;
-            PhoneInfo secend = y as PhoneInfo;
-
             if (first.Name.CompareTo(secend.Name) == 1) return 1;
             else if (first.Name.CompareTo(secend.Name) == -1) return -1;
             else return 0;
         }
     }
 
-    class PhoneNumberComparer : HostComparer, IComparer
+    class PhoneNumberComparer : HostComparer, IComparer<PhoneInfo>
     {
-        public int Compare(object x, object y)
+        public int Compare(PhoneInfo first, PhoneInfo secend)
         {
-            PhoneInfo first = x as PhoneInfo;
-            PhoneInfo secend = y as PhoneInfo;
-
             if (first.PhoneNumber.CompareTo(secend.PhoneNumber) == 1) return 1;
             else if (first.PhoneNumber.CompareTo(secend.PhoneNumber) == -1) return -1;
             else return 0;
         }
     }
 
-    class BirthComparer : HostComparer, IComparer
+    class BirthComparer : HostComparer, IComparer<PhoneInfo>
     {
-        public int Compare(object x, object y)
+        public int Compare(PhoneInfo first, PhoneInfo secend)
         {
-            PhoneInfo first = x as PhoneInfo;
-            PhoneInfo secend = y as PhoneInfo;
-
             if (first.Birth.CompareTo(secend.Birth) == 1) return 1;
             else if (first.Birth.CompareTo(secend.Birth) == -1) return -1;
             else return 0;
         }
     }
 
-    class MajorComparer : HostComparer, IComparer
+    class MajorComparer : HostComparer, IComparer<PhoneInfo>
     {
-        public int Compare(object x, object y)
+        public int Compare(PhoneInfo x, PhoneInfo y)
         {
             if (!(x is PhoneUnivInfo) && !(y is PhoneUnivInfo)) return 0; //둘다 PhoneUnivInfo 가 아니면
             else if ((x is PhoneUnivInfo) && !(y is PhoneUnivInfo)) return -1; // 첫번째만 PhoneUnivInfo 이면
@@ -65,9 +60,9 @@ namespace ConsolePonBook
         }
     }
 
-    class YearComparer : HostComparer, IComparer
+    class YearComparer : HostComparer, IComparer<PhoneInfo>
     {
-        public int Compare(object x, object y)
+        public int Compare(PhoneInfo x, PhoneInfo y)
         {
             if (!(x is PhoneUnivInfo) && !(y is PhoneUnivInfo)) return 0; //둘다 PhoneUnivInfo 가 아니면
             else if ((x is PhoneUnivInfo) && !(y is PhoneUnivInfo)) return -1; // 첫번째만 PhoneUnivInfo 이면
@@ -82,7 +77,7 @@ namespace ConsolePonBook
         }
     }
 
-    class CompanyComparer : HostComparer, IComparer
+    class CompanyComparer : HostComparer, IComparer<PhoneInfo>
     {
         public int Compare(object x, object y)
         {
@@ -99,7 +94,4 @@ namespace ConsolePonBook
         }
     }
 
-    class Compaer
-    {
-    }
 }

@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ConsolePonBook
 {
-
     class InputException : System.Exception
     {
         public InputException() : base() { }
@@ -21,30 +21,45 @@ namespace ConsolePonBook
         protected InputException(System.Runtime.Serialization.SerializationInfo info,
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
-
+    /// <summary>
+    /// 전체적인 부분 ui를 보여주며 해당 데이터를 가지고 주 기능을 담당함
+    /// </summary>
     class PhoneBookManager
     {
+        //입력시 무엇을 선택했는지 확인
+        enum PhonesChoose { phoneInfo = 1, phoneUnivInfo = 2, phoneCompanyInfo = 3 }
+        //파일 이름
+        readonly string dataFile = "PhooneBookManager.dat";
+        //폰북 매니저 싱글턴
         static PhoneBookManager bookManager;
-
+        //주 데이터의 배열
         HashSet<PhoneInfo> phones = new HashSet<PhoneInfo>();
-        
+        //정렬기준점
         HostComparer Com = new HostComparer();
-
-        enum PhonesChoose { phoneInfo = 1, phoneUnivInfo = 2 , phoneCompanyInfo = 3 }
-
+        
+        //싱글턴
         private PhoneBookManager()
         {
-            BinaryFormatter binary = new BinaryFormatter();
-            using (FileStream file = new FileStream("PhooneBookManager.dat", FileMode.OpenOrCreate, FileAccess.Read))
+            try
             {
-                if (!(file.Length == 0))
+                BinaryFormatter binary = new BinaryFormatter();
+                using (FileStream file = new FileStream(dataFile, FileMode.OpenOrCreate, FileAccess.Read))
                 {
-                    phones = (HashSet<PhoneInfo>)binary.Deserialize(file);
-                    file.Flush();
+                    if (!(file.Length == 0))
+                    {
+                        phones = (HashSet<PhoneInfo>)binary.Deserialize(file);
+                        file.Flush();
+                    }
                 }
+            }
+            catch (Exception)
+            {
+
+
             }
         }
 
+        //생성
         public static PhoneBookManager Create()
         {
             if (bookManager == null)
@@ -57,6 +72,7 @@ namespace ConsolePonBook
         //string phoneNumber;     //필수
         //string birth;           //선택
 
+        //매뉴를 보여줌
         public void ShowMenu()
         {
             Console.WriteLine("----------------------------------- 주소록 ------------------------------------");
@@ -66,6 +82,7 @@ namespace ConsolePonBook
         }
 
         #region 외부 사용 메서드 
+        //입력 데이터
         public void InputData()
         {
             while (true)
@@ -86,6 +103,7 @@ namespace ConsolePonBook
                 }
             }
         }
+        //데이터 보여줌
         public void ListData()
         {
             if (phones.Count == 0)
@@ -101,6 +119,7 @@ namespace ConsolePonBook
             }
             Console.ReadLine();
         }
+        //검색 데이터
         public void SearchData()
         {
             Console.Clear();
@@ -129,6 +148,7 @@ namespace ConsolePonBook
             }
             Console.Clear();
         }
+        //데이터 삭제
         public void DeleteData()        //딜리트는 실수로 한다면 문제가 많기 때문에 여러번 할 수 없게 만든다
         {
             int cho = -1;
@@ -174,44 +194,55 @@ namespace ConsolePonBook
 
             phones.Remove(phones.ElementAt(cho));
         }
+        //정렬및 기준 확인
         public void Compar()
         {
             Console.Clear();
             Regex temp = new Regex(@"[1-6]{1}$");
-            PhoneInfo[] phone = phones.ToArray();
+            //List<PhoneInfo> list = phones.ToList();
+            List<PhoneInfo> list = new List<PhoneInfo>(phones);
             Console.WriteLine("정렬할 기준을 선택하세요");
             Console.WriteLine("1.이름\t2.폰번호\t3.생일\t4.전공\t5.입학년도\t6.회사");
             int cho = int.Parse(CaseInput(temp));
             switch (cho)
             {
-                case 1: Com = new NameComparer(); Array.Sort(phone, Com); break;
-                case 2: Com = new PhoneNumberComparer(); Array.Sort(phone, Com); break;
-                case 3: Com = new BirthComparer(); Array.Sort(phone, Com); break;
-                case 4: Com = new MajorComparer(); Array.Sort(phone, Com); break;
-                case 5: Com = new YearComparer(); Array.Sort(phone, Com); break;
-                case 6: Com = new CompanyComparer();  Array.Sort(phone, Com); break;
+                case 1: Com = new NameComparer(); list.Sort(Com); break;
+                case 2: Com = new PhoneNumberComparer(); list.Sort(Com); break;
+                case 3: Com = new BirthComparer(); list.Sort(Com); break;
+                case 4: Com = new MajorComparer(); list.Sort(Com); break;
+                case 5: Com = new YearComparer(); list.Sort(Com); break;
+                case 6: Com = new CompanyComparer(); list.Sort(Com); break;
 
                 default: Console.WriteLine("잘못되었습니다."); return;
             }
 
-            foreach(PhoneInfo phoneInfo in phone) {
-                Console.WriteLine($"{phoneInfo.ToString()}");        //생일의 초기값 = "Not data"
+            foreach(PhoneInfo phoneInfo in list) {
+                Console.WriteLine($"{phoneInfo}");        //생일의 초기값 = "Not data"
             }
             Console.ReadLine();
 
         }
+        //끝날때 하는 동작 
         public void END()
         {
-            BinaryFormatter binary = new BinaryFormatter();
-            using (FileStream file = new FileStream("PhooneBookManager.dat", FileMode.OpenOrCreate, FileAccess.Write))
+            try
             {
-                binary.Serialize(file, phones);
-                file.Flush();
+                BinaryFormatter binary = new BinaryFormatter();
+                using (FileStream file = new FileStream(dataFile, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    binary.Serialize(file, phones);
+                    file.Flush();
+                }
+            }
+            catch (Exception)
+            {
+
             }
         }
         #endregion
 
         #region 내부 사용 메서드
+        //검색 이름기준
         private void SearchForName()
         {
             Console.Clear();
@@ -227,6 +258,7 @@ namespace ConsolePonBook
             }
             Console.ReadLine();
         }
+        //검색 생일기준
         private void SearchForBirth()
         {
             Console.Clear();
@@ -242,6 +274,7 @@ namespace ConsolePonBook
             }
             Console.ReadLine();
         }
+        //검색 폰넘버기준
         private void SearchForPhoneNumber()
         {
             Console.Clear();
@@ -257,9 +290,12 @@ namespace ConsolePonBook
             }
             Console.ReadLine();
         }
+        //검색 데이터 입력
         private void PhoneData(PhonesChoose choose)
         {
             Console.Clear();
+
+            bool Add = false;
             Regex temp = new Regex(@"^[가-힣]{1,}$"); //이름입력 조건은 1개이상 한글
             Console.Write("이름: ");
             string name = CaseInput(temp);
@@ -289,15 +325,9 @@ namespace ConsolePonBook
                 if (year == "-1") { ShowErr(); return; }
 
                 if (birth == "-1")
-                {
-                    phones.Add(new PhoneUnivInfo(name, phoneNumber, major, year));
-                    return;         //값이 할당 됬으므로
-                }
+                    Add = phones.Add(new PhoneUnivInfo(name, phoneNumber, major, year));
                 else
-                {
-                    phones.Add(new PhoneUnivInfo(name, phoneNumber, birth, major, year));
-                    return;
-                }
+                    Add = phones.Add(new PhoneUnivInfo(name, phoneNumber, birth, major, year));
             }
             else if (choose == PhonesChoose.phoneCompanyInfo)
             {
@@ -307,30 +337,24 @@ namespace ConsolePonBook
                 if (company == "-1") { ShowErr(); return; }
 
                 if (birth == "-1")
-                {
-                    phones.Add(new PhoneCompanyInfo(name, phoneNumber, company));
-                    return;
-                }
+                    Add = phones.Add(new PhoneCompanyInfo(name, phoneNumber, company));
                 else
-                {
-                    phones.Add(new PhoneCompanyInfo(name, phoneNumber, birth, company));
-                    return;
-                }
+                    Add = phones.Add(new PhoneCompanyInfo(name, phoneNumber, birth, company));
             }
             else
             {
                 if (birth == "-1")
-                {
-                    phones.Add(new PhoneInfo(name, phoneNumber));
-                    return;
-                }
+                    Add = phones.Add(new PhoneInfo(name, phoneNumber));
                 else
-                {
-                    phones.Add(new PhoneInfo(name, phoneNumber, birth));
-                    return;
-                }
+                    Add = phones.Add(new PhoneInfo(name, phoneNumber, birth));
             }
+            if (Add)
+                Console.WriteLine("입력되었습니다.");
+            else
+                Console.WriteLine("중복된 번호가 있습니다.");
+            Console.ReadLine();
         }
+        //검색 입력시 입력값 체크
         private string CaseInput(Regex temp)
         {
             try
@@ -350,6 +374,7 @@ namespace ConsolePonBook
                 return "-1";
             }
         }
+        //검색 오류 확인
         private void ShowErr()
         {
             Console.WriteLine("입력이 잘못되었습니다.");

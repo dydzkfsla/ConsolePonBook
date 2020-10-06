@@ -24,17 +24,22 @@ namespace ConsolePonBook
                     Console.WriteLine("입력이 잘못되었습니다.");
                     choice = -1;
                 }
-
-                switch (choice) 
+                try
                 {
-                    case 1: manager.InputData(); break;
-                    case 2: manager.ListData(); break;
-                    case 3: manager.SearchData(); break;
-                    case 4: manager.Compar(); break;
-                    case 5: manager.DeleteData(); break;
-                    case 6: Console.Clear(); manager.END(); return;
+                    switch (choice)
+                    {
+                        case 1: manager.InputData(); break;
+                        case 2: manager.ListData(); break;
+                        case 3: manager.SearchData(); break;
+                        case 4: manager.Compar(); break;
+                        case 5: manager.DeleteData(); break;
+                        case 6: Console.Clear(); manager.END(); return;
+                    }
                 }
-
+                catch (Exception)
+                {
+                    manager.END();
+                }
                 Console.Clear();
             }
         }
