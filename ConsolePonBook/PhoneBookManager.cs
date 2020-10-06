@@ -193,6 +193,15 @@ namespace ConsolePonBook
             if (temp == 2) return;
 
             phones.Remove(phones.ElementAt(cho));
+
+
+            //Console.WriteLine("폰번호: ");       방법2
+            //string temp2 = Console.ReadLine();
+            //foreach (PhoneInfo temp1 in phones)
+            //{
+            //    if (temp1.PhoneNumber == temp2)
+            //        phones.Remove(temp1);
+            //}
         }
         //정렬및 기준 확인
         public void Compar()
